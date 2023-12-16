@@ -650,6 +650,10 @@ void process_yaml(yaml_parser_t *parser, GNode *data) {
 	yaml_event_t event;
 	int storage = VAR;
 
+	gchar* alias; // Declare 'alias'
+    GHashTable* alias_map = g_hash_table_new(g_str_hash, g_str_equal); // Declare 'alias_map'
+
+
 	while (TRUE) {
 		if (!yaml_parser_parse(parser, &event))
 			break;
@@ -660,11 +664,11 @@ void process_yaml(yaml_parser_t *parser, GNode *data) {
 			storage ^= VAL;
 		}
         else if (event.type == YAML_ALIAS_EVENT) {
-            alias = (gchar*)event.data.alias.anchor;
-            GNode* alias_node = alias_map[alias];
-            if (alias_node) {
-             g_node_append(last_leaf, g_node_copy(alias_node));
-            }
+           alias = (gchar*)event.data.alias.anchor;
+           GNode* alias_node = (GNode*)g_hash_table_lookup(alias_map, alias);
+           if (alias_node) {
+            g_node_append(last_leaf, g_node_copy(alias_node));
+           }
         }
 		else if (event.type == YAML_SEQUENCE_START_EVENT) storage = SEQ;
 		else if (event.type == YAML_SEQUENCE_END_EVENT) storage = VAR;
