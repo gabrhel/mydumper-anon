@@ -659,6 +659,13 @@ void process_yaml(yaml_parser_t *parser, GNode *data) {
 			else last_leaf = g_node_append(data, g_node_new(g_strdup((gchar*) event.data.scalar.value)));
 			storage ^= VAL;
 		}
+        else if (event.type == YAML_ALIAS_EVENT) {
+            std::string alias = (char*)event.data.alias.anchor;
+            GNode* alias_node = alias_map[alias];
+            if (alias_node) {
+             g_node_append(last_leaf, g_node_copy(alias_node));
+            }
+        }
 		else if (event.type == YAML_SEQUENCE_START_EVENT) storage = SEQ;
 		else if (event.type == YAML_SEQUENCE_END_EVENT) storage = VAR;
 		else if (event.type == YAML_MAPPING_START_EVENT) {
@@ -684,4 +691,3 @@ gboolean dump(GNode *node, gpointer data) {
 	printf("%s\n", (char*) node->data);
 	return(FALSE);
 }
-
