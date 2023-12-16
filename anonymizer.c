@@ -660,7 +660,7 @@ void process_yaml(yaml_parser_t *parser, GNode *data) {
 			storage ^= VAL;
 		}
         else if (event.type == YAML_ALIAS_EVENT) {
-            std::string alias = (char*)event.data.alias.anchor;
+            alias = (gchar*)event.data.alias.anchor;
             GNode* alias_node = alias_map[alias];
             if (alias_node) {
              g_node_append(last_leaf, g_node_copy(alias_node));
